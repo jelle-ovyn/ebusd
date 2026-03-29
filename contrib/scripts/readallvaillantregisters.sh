@@ -15,11 +15,12 @@ Helper script to read all Vaillant registers from an ebusd instance.
   -a, --addr=ZZ       Address to read (hex) [08]
   -f, --from=NUM      First register to read [0]
   -c, --count=NUM     Number of registers to read [128]
+      --tsp           Create a TypeSpec template from the data
 EOF
 }
 
 # parse cmdline options
-OPTS=$(getopt -n ebusctl -o 's:p:t:a:f:c:h' -l 'server:,port:,timeout:,addr:,from:,count:,help' -- "$@")
+OPTS=$(getopt -n ebusctl -o 's:p:t:a:f:c:h' -l 'server:,port:,timeout:,addr:,from:,count:,tsp,help' -- "$@")
 if [ $? -ne 0 ]; then
   help
   exit 1
@@ -31,6 +32,7 @@ timeout=60
 addr=08
 from=0
 count=128
+tsp=
 while true; do
   case "$1" in
     '-s'|'--server')
@@ -95,6 +97,10 @@ while true; do
       count=$(( $count ))
       continue
       ;;
+    '--tsp')
+      shift
+      tsp=1
+      ;;
     '-h'|'--help')
       shift
       help
@@ -125,9 +131,43 @@ if [ "$timeout" -gt 0 ]; then
 fi
 args+=("$server" "$port")
 
+# emit tsp header if requested
+if [ -n "$tsp" ]; then
+cat << EOF
+import "@ebusd/ebus-typespec";
+import "./_templates.tsp";
+import "./hcmode_inc.tsp";
+import "./errors_inc.tsp";
+using Ebus;
+using Ebus.Num;
+using Ebus.Dtm;
+using Ebus.Str;
+namespace Vaillant;
+
+// @zz(0x${addr})
+namespace circuit { // TODO use the circuit name from the scan result instead
+EOF
+fi
+
 # query the registers
 for (( i=$from; i<$to; i++ )) ; do
   h=`printf "%4.4X" $i`
   ret=`echo "hex ${addr}b509030d${h##??}${h%%??}"|nc "${args[@]}"|head -n 1`
-  echo $i "=" $ret
+  if [ -z "$tsp" ]; then
+    echo $i "=" $ret
+  else
+    d=$(echo "$ret"|egrep "^([0-9a-f][0-9a-f])*$"|head -n 1|sed -e 's#^..##')
+    if [ -n "$d" ]; then
+      echo "  /** <describe the message> */"
+      echo "  @Ebus.example(\"<enter the value>\", \"31${addr}b5090d${h##??}${h%%??}\", \"$d\")"
+      echo "  @ext(0x${h##??}, 0x${h%%??})"
+      echo "  model Register$i is ReadonlyRegister<UCH>; // TODO rename 'Register...' to something meaningful (e.g. RoomTemp) and determine the right datatype/model instead of 'UCH' (e.g. as in _templates.tsp)"
+      echo
+    fi
+  fi
 done
+
+# emit tsp footer if requested
+if [ -n "$tsp" ]; then
+  echo "}"
+fi
