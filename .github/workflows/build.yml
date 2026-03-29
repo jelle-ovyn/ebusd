@@ -11,6 +11,7 @@ on:
       - 'Makefile*'
       - 'make_debian.sh'
       - 'contrib/docker/**'
+      - 'contrib/scripts/ebusctl'
   workflow_dispatch:
     inputs:
       limitarch:
