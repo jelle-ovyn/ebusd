@@ -1,7 +1,7 @@
 #!/bin/bash -x
 prefix=.
 ebusd=$prefix/src/ebusd/ebusd
-ebusctl=$prefix/src/tools/ebusctl
+ebusctl=$prefix/contrib/scripts/ebusctl
 ebuspicloader=$prefix/src/tools/ebuspicloader
 
 $ebusd --help >/dev/null
