@@ -28,7 +28,6 @@ build-/
 *.gc*
 app.info
 /src/ebusd/ebusd
-/src/tools/ebusctl
 /src/tools/ebusfeed
 /src/lib/ebus/contrib/test/test_tem
 /src/lib/ebus/test/test_symbol

@@ -42,7 +42,7 @@ The main features of the daemon are:
  * log messages and problems to a log file
  * capture messages or sent/received bytes to a log file as text
  * dump received bytes to binary files for later playback/analysis
- * listen for [command line client](https://github.com/john30/ebusd/wiki/3.1.-TCP-client-commands) connections on a dedicated TCP port
+ * listen for [command line client](https://github.com/john30/ebusd/wiki/3.1.-TCP-client-commands) connections on a dedicated TCP port, e.g. by using netcat or the [wrapper ebusctl script](https://github.com/john30/ebusd/blob/master/contrib/scripts/ebusctl)
  * provide a rudimentary HTML interface
  * format messages and data in [JSON on dedicated HTTP port](https://github.com/john30/ebusd/wiki/3.2.-HTTP-client)
  * publish received data to [MQTT topics](https://github.com/john30/ebusd/wiki/3.3.-MQTT-client) and vice versa (if authorized)

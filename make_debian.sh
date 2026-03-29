@@ -117,6 +117,8 @@ echo "*************"
 echo " pack"
 echo "*************"
 echo
+cp contrib/scripts/ebusctl $RELEASE/usr/bin/ || exit 1
+chmod a+x $RELEASE/usr/bin/ebusctl || exit 1
 mkdir -p $RELEASE/DEBIAN $RELEASE/etc/logrotate.d || exit 1
 cp contrib/etc/logrotate.d/ebusd $RELEASE/etc/logrotate.d/ || exit 1
 cp ChangeLog.md $RELEASE/DEBIAN/changelog || exit 1
@@ -129,7 +131,7 @@ Architecture: $ARCH
 Maintainer: John Baier <ebusd@ebusd.eu>
 Homepage: https://github.com/john30/ebusd
 Bugs: https://github.com/john30/ebusd/issues
-Depends: libstdc++6 (>= 4.8.1), libc6, libgcc1$extralibs
+Depends: netcat-openbsd, util-linux, bash, libstdc++6 (>= 4.8.1), libc6, libgcc1$extralibs
 Recommends: logrotate
 Description: eBUS daemon.
  ebusd is a daemon for handling communication with eBUS devices connected to a
